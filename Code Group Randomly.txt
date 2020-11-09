@@ -1,0 +1,122 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Repartidor
+{
+    class Program
+    {
+        public class Pair
+        {
+            public List<string> students { get; set;}
+            public List<string> topics { get; set; }
+            public Pair()
+            {
+                students = new List<string>();
+                topics = new List<string>();
+            }
+        }
+
+        public static void Assign(Dictionary <string, Pair>d,string[] gr, string st, int n)
+        {
+            while (true)
+            {
+                    int ran = new Random().Next(d.Count);
+                if (d[gr[ran]].students.Count < n)
+                {
+                    d[gr[ran]].students.Add(st);
+                    break;
+                }
+            }
+
+
+        }
+
+        public static void Assign2(Dictionary<string, Pair> d,string[] gr, string st, int n) 
+        { 
+            while(true)
+            {
+                int ran = new Random().Next(d.Count);
+                if (d[gr[ran]].topics.Count<n)
+                {
+                    d[gr[ran]].topics.Add(st);
+                    break;
+                }
+
+            }
+
+
+        }
+
+        static void Main(string[] args)
+        {
+            string[] students = { }, groups = { }, topics = { };
+
+            try
+            {
+                students = File.ReadAllLines(@"C:\Users\Daniela Torres Diaz\Downloads\Estudiantes.txt");
+                groups = File.ReadAllLines(@"C:\Users\Daniela Torres Diaz\Downloads\Grupo.txt");
+                topics = File.ReadAllLines(@"C:\Users\Daniela Torres Diaz\Downloads\Topicos.txt");
+           
+            } catch (Exception ex)
+            {
+                Console.WriteLine("Error reading the file, try again");
+                Console.WriteLine("Log: {0}", ex.Message);
+                return;
+
+            }
+
+            Console.WriteLine("    Estudiantes    ");
+            for(int i=0; i<students.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {students[i]}");
+            }
+            Console.WriteLine();
+
+            //Group dictionary
+            Dictionary<string, Pair> dict = new Dictionary<string, Pair>();
+            for(int i =0; i< groups.Length; i++)
+            {
+
+                dict.Add(groups[i], new Pair());
+            }
+
+            int remain = students.Length % groups.Length;
+            int studentPerGroup = students.Length / groups.Length;
+
+            for (int i=0; i < students.Length; i++)
+            {
+                Assign(dict,groups, students[i],studentPerGroup);
+            }
+
+            int remain2 = topics.Length % groups.Length;
+            int TopicPerGroup = topics.Length / groups.Length;
+
+            for (int i = 0; i < topics.Length; i++)
+            {
+                Assign2(dict, groups, topics[i], TopicPerGroup);
+            }
+            
+            foreach(var pair in dict)
+            {
+                Console.WriteLine($" Grupo: {pair.Key}| Estudiantes: {pair.Value.students.Count} | Temas " + $"{ pair.Value.topics.Count}");
+                Console.WriteLine("   Estudiantes: "); 
+                foreach(string st in pair.Value.students)
+                {
+                   
+                    Console.WriteLine($"             [{st}],");
+                }
+                 Console.WriteLine("   Temas: "); 
+                foreach (string t in pair.Value.topics)
+                {
+                    
+                    Console.WriteLine($"         [{t}],");
+                }
+
+                Console.WriteLine();
+
+            }
+
+        }
+    }
+}
